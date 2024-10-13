@@ -1,0 +1,10 @@
+{
+    "discord_hook": "https://discord.com/api/webhooks/...",
+    "ultrasonic": {
+        "trigger": 4,
+        "echo": 27
+    },
+    "relay": {
+        "pin": 17
+    }
+}
