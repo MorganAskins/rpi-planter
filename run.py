@@ -5,13 +5,16 @@ import time
 import requests
 import argparse
 import json
+import os
 from sprinkler import Sprinkler
 
+
 def parse_args():
+    config_file = os.path.abspath(os.path.dirname(__file__)) + '/config.json'
     parser = argparse.ArgumentParser(description='Run sprinkler')
     parser.add_argument('-d', '--duration', type=int, default=45, help='Duration to run pump')
     parser.add_argument('--ignore_sensor', action='store_true', help='Ignore sensor reading')
-    parser.add_argument('--config', type=str, default='config.json', help='Configuration file')
+    parser.add_argument('--config', type=str, default=config_file, help='Configuration file')
     return parser.parse_args()
 
 def send_message(msg, to):
@@ -33,17 +36,18 @@ def main():
     )
     init_distance = 0 if args.ignore_sensor else sprinkler.read_volume()
     if init_distance < 5:
-        send_message(f"Alert: low level detected ({init_distance:0.1f}%)", config['discord_webhook'])
+        send_message(f"Alert: low level detected ({init_distance:0.1f}%)", config['discord_hook'])
         exit(1)
     sprinkler.run_pump(args.duration)
     new_distance = 0 if args.ignore_sensor else sprinkler.read_volume()
     timenow = dt.now().strftime('%Y-%m-%d %H:%M:%S')
     msg = f'{timenow} ({args.duration}s Fill) from {init_distance:0.1f}% -> {new_distance:0.1f}%\n'
 
-    with open('~/log.txt', 'a') as outfile:
+    file_path = os.path.abspath(os.path.dirname(__file__)) + '/log.txt'
+    with open(file_path, 'a') as outfile:
         outfile.write(msg)
 
-    rsp = send_message(msg, config['discord_webhook'])
+    rsp = send_message(msg, config['discord_hook'])
 
 
 if __name__ == '__main__':
@@ -57,6 +61,6 @@ if __name__ == '__main__':
     p1.join(timeout)
     if p1.is_alive():
         p1.terminate()
-        send_message("Error: Timeout", config['discord_webhook'])
+        send_message("Error: Timeout", config['discord_hook'])
         exit(1)
     exit(0)
