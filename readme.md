@@ -7,3 +7,5 @@ to discord via a webhook.
 
 Pinout
 ------
+[<img src="pi_wires.jpg" width=600px>]()  
+[<img src="ultrasonic_sensor.jpg" width=600px>]()
